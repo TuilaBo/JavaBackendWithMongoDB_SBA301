@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import pojo.Role;
 import repository.RoleRepository;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -20,6 +21,10 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role insertRole(Role role) {
         if (role != null && role.getRoleName() != null && !role.getRoleName().isEmpty()) {
+           // Generate an id for String primary key if missing
+           if (role.getId() == null || role.getId().trim().isEmpty()) {
+               role.setId(UUID.randomUUID().toString());
+           }
            return roleRepository.save(role);
         } else {
             throw new IllegalArgumentException("Role or role name cannot be null or empty");
@@ -27,7 +32,8 @@ public class RoleServiceImpl implements RoleService {
     }
     @Override
     public Role getRoleById(String id) {
-        return roleRepository.findById(id).orElse(null);
+        return roleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Role not found with ID: " + id));
     }
 
     @Override
@@ -40,7 +46,22 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public Role updateRole(String id, Role role) {
+        Role existingRole = roleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Role with ID " + id + " does not exist"));
+        existingRole.setRoleName(role.getRoleName());
+        return roleRepository.save(existingRole);
+    }
+
+    @Override
     public void deleteRole(Role role) {
+        roleRepository.delete(role);
+    }
+
+    @Override
+    public void deleteRoleById(String id) {
+        Role role = roleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Role with ID " + id + " does not exist"));
         roleRepository.delete(role);
     }
 

@@ -1,9 +1,10 @@
 package service;
 
+import com.se170395.orchid.aop.Audit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pojo.Orchid;
-import pojo.Category;
 import repository.OrchidRepository;
 import repository.CategoryRepository;
 
@@ -30,6 +31,8 @@ public class OrchidServiceImpl implements OrchidService {
     }
 
     @Override
+    @Transactional
+    @Audit(action = "ORCHID_CREATE")
     public Orchid createOrchid(Orchid orchid) {
         // Validate category exists
         if (orchid.getCategoryId() != null) {
@@ -41,6 +44,8 @@ public class OrchidServiceImpl implements OrchidService {
     }
 
     @Override
+    @Transactional
+    @Audit(action = "ORCHID_UPDATE")
     public Orchid updateOrchid(String id, Orchid orchid) {
         Orchid existingOrchid = orchidRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Orchid not found with id: " + id));
@@ -61,6 +66,8 @@ public class OrchidServiceImpl implements OrchidService {
     }
 
     @Override
+    @Transactional
+    @Audit(action = "ORCHID_DELETE")
     public void deleteOrchid(String id) {
         if (!orchidRepository.existsById(id)) {
             throw new IllegalArgumentException("Orchid not found with id: " + id);
@@ -69,7 +76,7 @@ public class OrchidServiceImpl implements OrchidService {
     }
 
     @Override
-    public List<Orchid> getOrchidsByCategory(String categoryId) {
+    public List<Orchid> getOrchidsByCategory(Long categoryId) {
         return orchidRepository.findByCategoryId(categoryId);
     }
 

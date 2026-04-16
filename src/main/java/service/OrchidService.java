@@ -10,6 +10,6 @@ public interface OrchidService {
     Orchid createOrchid(Orchid orchid);
     Orchid updateOrchid(String id, Orchid orchid);
     void deleteOrchid(String id);
-    List<Orchid> getOrchidsByCategory(String categoryId);
+    List<Orchid> getOrchidsByCategory(Long categoryId);
     List<Orchid> searchOrchidsByName(String name);
 }

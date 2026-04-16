@@ -1,15 +1,17 @@
 package controller;
 
+import dto.common.StatusUpdateRequest;
+import dto.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import pojo.Order;
 import pojo.OrderDetail;
 import service.OrderService;
@@ -26,70 +28,67 @@ public class OrderController {
     
     @Operation(summary = "Create new order", description = "Creates a new order")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Order created successfully",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Order created successfully",
                     content = @Content(schema = @Schema(implementation = Order.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order createdOrder = orderService.createOrder(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
+    public ResponseEntity<ApiResponse<Order>> createOrder(@RequestBody Order order) {
+        Order data = orderService.createOrder(order);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.of(HttpStatus.CREATED.value(), "Order created successfully", data));
     }
     
     @Operation(summary = "Get order by ID", description = "Returns a specific order by ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Order found",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Order found",
                     content = @Content(schema = @Schema(implementation = Order.class))),
-            @ApiResponse(responseCode = "404", description = "Order not found")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Order not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable String id) {
-        return orderService.getOrderById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<Order>> getOrderById(@PathVariable String id) {
+        Order data = orderService.getOrderById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Order retrieved successfully", data));
     }
     
     @Operation(summary = "Get user orders", description = "Returns all orders for the current user")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved user orders")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Successfully retrieved user orders")
     @GetMapping("/my-orders")
-    public ResponseEntity<List<Order>> getMyOrders() {
-        List<Order> orders = orderService.getOrdersByUser();
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<ApiResponse<List<Order>>> getMyOrders() {
+        List<Order> data = orderService.getOrdersByUser();
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Orders retrieved successfully", data));
     }
     
     @Operation(summary = "Get all orders", description = "Returns all orders")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved all orders")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Successfully retrieved all orders")
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(orders);
+    public ResponseEntity<ApiResponse<List<Order>>> getAllOrders() {
+        List<Order> data = orderService.getAllOrders();
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Orders retrieved successfully", data));
     }
     
     @Operation(summary = "Update order status", description = "Updates order status")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Order status updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Order not found")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Order status updated successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Order not found")
     })
     @PutMapping("/{id}/status")
-    public ResponseEntity<Order> updateOrderStatus(@PathVariable String id, @RequestParam String status) {
-        try {
-            Order updatedOrder = orderService.updateOrderStatus(id, status);
-            return ResponseEntity.ok(updatedOrder);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ApiResponse<Order>> updateOrderStatus(@PathVariable String id, @RequestBody StatusUpdateRequest request) {
+        Order data = orderService.updateOrderStatus(id, request.getStatus());
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Order status updated successfully", data));
     }
     
     @Operation(summary = "Add item to order", description = "Adds an orchid to the current order")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Item added successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Item added successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid input"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @PostMapping("/{orderId}/items")
-    public ResponseEntity<OrderDetail> addOrderItem(@PathVariable String orderId, @RequestBody OrderDetail orderDetail) {
-        OrderDetail addedItem = orderService.addOrderItem(orderId, orderDetail);
-        return ResponseEntity.ok(addedItem);
+    public ResponseEntity<ApiResponse<OrderDetail>> addOrderItem(@PathVariable String orderId, @RequestBody OrderDetail orderDetail) {
+        OrderDetail data = orderService.addOrderItem(orderId, orderDetail);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "Item added successfully", data));
     }
 }

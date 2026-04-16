@@ -1,12 +1,14 @@
 package pojo;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Document(collection = "order")
+@Entity
+@Table(name = "order_table")
 public class Order {
 
     @Id

@@ -4,15 +4,17 @@ import pojo.Role;
 import java.util.List;
 
 public interface RoleService {
-    public Role getRole(String roleName);
+    Role getRole(String roleName);
 
-    public Role insertRole(Role role);
+    Role insertRole(Role role);
 
-    public Role getRoleById(String id);
+    Role getRoleById(String id);
 
-    public void deleteRole(Role role);
+    void deleteRole(Role role);
 
-    public Role updateRole(Role role);
+    Role updateRole(Role role);
 
-    public List<Role> getAllRoles();
+    Role updateRole(String id, Role role);
+    void deleteRoleById(String id);
+    List<Role> getAllRoles();
 }
