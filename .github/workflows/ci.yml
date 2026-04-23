@@ -1,20 +1,28 @@
-name: Java CI
+name: Java CI/CD
 
 on:
   push:
     branches:
-      - main
-      - develop
-      - "feature/**"
+      - master
+      - dev
+    tags:
+      - "v*"
   pull_request:
     branches:
-      - main
-      - develop
+      - master
+      - dev
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  compile:
-    name: Compile Project
+  ci:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -28,8 +36,8 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Compile with Maven
-        run: mvn -B -DskipTests compile
+      - name: Run Maven verify
+        run: mvn -B verify
 
       - name: Upload Surefire reports if present
         if: always()
@@ -38,3 +46,39 @@ jobs:
           name: surefire-reports
           path: target/surefire-reports
           if-no-files-found: ignore
+
+      - name: Upload Failsafe reports if present
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failsafe-reports
+          path: target/failsafe-reports
+          if-no-files-found: ignore
+
+      - name: Upload JAR artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: target/*.jar
+          if-no-files-found: ignore
+
+  release:
+    name: Create GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: dist
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.jar
