@@ -1,11 +1,11 @@
 package repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import pojo.Orchid;
 import java.util.List;
 
-public interface OrchidRepository extends MongoRepository<pojo.Orchid, String> {
+public interface OrchidRepository extends JpaRepository<Orchid, String> {
     Orchid findByOrchidName(String orchidName);
-    java.util.List<pojo.Orchid> findByCategoryId(String categoryId);
-    java.util.List<pojo.Orchid> findByOrchidNameContainingIgnoreCase(String name);
+    List<Orchid> findByCategoryId(Long categoryId);
+    List<Orchid> findByOrchidNameContainingIgnoreCase(String name);
 }

@@ -1,5 +1,6 @@
 package service;
 
+import com.se170395.orchid.aop.Audit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pojo.Category;
@@ -20,11 +21,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Optional<Category> getCategoryById(String id) {
+    public Optional<Category> getCategoryById(Long id) {
         return categoryRepository.findById(id);
     }
 
     @Override
+    @Audit(action ="CATEGORY_CREATE" )
     public Category createCategory(Category category) {
         // Check if category name already exists
         Category existingCategory = categoryRepository.findByCategoryName(category.getCategoryName());
@@ -35,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(String id, Category category) {
+    public Category updateCategory(Long id, Category category) {
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
         
@@ -50,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(String id) {
+    public void deleteCategory(Long id) {
         if (!categoryRepository.existsById(id)) {
             throw new IllegalArgumentException("Category not found with id: " + id);
         }

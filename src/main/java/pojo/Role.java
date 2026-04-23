@@ -1,9 +1,11 @@
 package pojo;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@Document(collection = "role")
+@Entity
+@Table(name = "role")
 public class Role {
 
     @Id

@@ -1,8 +1,8 @@
 package repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import pojo.Category;
 
-public interface CategoryRepository extends MongoRepository<pojo.Category, String> {
-    pojo.Category findByCategoryName(String categoryName);
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+    Category findByCategoryName(String categoryName);
 }

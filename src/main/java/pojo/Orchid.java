@@ -1,9 +1,9 @@
 package pojo;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
 
-@Document(collection = "orchid")
+@Entity
+@Table(name = "orchid")
 public class Orchid {
 
     @Id
@@ -19,12 +19,13 @@ public class Orchid {
 
     private double price;
 
-    private String categoryId;
+    @Column(name = "category_id")
+    private Long categoryId;
 
     public Orchid() {
     }
 
-    public Orchid(String id, Boolean isNatural, String orchidDescription, String orchidName, String orchidUrl, double price, String categoryId) {
+    public Orchid(String id, Boolean isNatural, String orchidDescription, String orchidName, String orchidUrl, double price, Long categoryId) {
         this.id = id;
         this.isNatural = isNatural;
         this.orchidDescription = orchidDescription;
@@ -82,11 +83,11 @@ public class Orchid {
         this.price = price;
     }
 
-    public String getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(String categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 }
