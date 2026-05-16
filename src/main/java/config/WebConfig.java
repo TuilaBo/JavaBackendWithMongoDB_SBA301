@@ -14,8 +14,9 @@ public class WebConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow requests from your frontend
-        config.addAllowedOrigin("http://localhost:5173");
+        // Browser frontend origins (page URL, not API URL)
+        config.addAllowedOriginPattern("http://localhost:*");
+        config.addAllowedOriginPattern("http://127.0.0.1:*");
 
         // Allow credentials
         config.setAllowCredentials(true);
