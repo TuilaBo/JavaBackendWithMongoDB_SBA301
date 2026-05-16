@@ -29,7 +29,11 @@ public class SwaggerConfig implements WebMvcConfigurer {
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
-                .servers(List.of(new Server().url("http://localhost:8080")))
+                // Relative URL: Swagger calls the same host (Render URL when deployed, localhost when local)
+                .servers(List.of(
+                        new Server().url("/").description("Current server"),
+                        new Server().url("http://localhost:8080").description("Local development")
+                ))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components().addSecuritySchemes("bearerAuth",
                         new SecurityScheme()
