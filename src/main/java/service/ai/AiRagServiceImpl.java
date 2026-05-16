@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Service
+// @Service
 public class AiRagServiceImpl implements AiRagService {
 
     private static final Logger log = LoggerFactory.getLogger(AiRagServiceImpl.class);
