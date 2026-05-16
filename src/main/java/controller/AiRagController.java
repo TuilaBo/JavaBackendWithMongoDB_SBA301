@@ -9,8 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.ai.AiRagService;
 
-@RestController
-@RequestMapping("/api/ai/rag")
+// RAG disabled on Render until GEMINI / GCP credentials are configured
+// @RestController
+// @RequestMapping("/api/ai/rag")
 public class AiRagController {
 
     private final AiRagService aiRagService;
